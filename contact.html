@@ -25,10 +25,7 @@
       color: rgb(141, 141, 141);
       text-transform: uppercase;
       overflow-x: hidden;
-      background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+      
     }
    
     .logo img {
@@ -107,10 +104,12 @@
     @media (max-width: 768px) {
       .hamburger {
         display: flex;
-        width: 30px;
-        height: 24px;
-        margin-left: 450px;
-        margin-top: -5rem;
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 30px;
+  height: 24px;
+  margin: 0;
       }
       .hamburger span {
         background-color: #942424;
@@ -186,14 +185,13 @@
       background-color: #fff;
     }
     .section {
-      margin-bottom: 0px;
-      padding: 00px;
+      margin-bottom: 50px;
+      padding: 20px;
     }
     .section.with-image {
       display: flex;
       align-items: flex-start;
-      gap: 0px;
-  
+      gap: 20px;
     }
     .section h1 {
       font-family: 'Bebas Neue', sans-serif;
