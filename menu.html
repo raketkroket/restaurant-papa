@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eethuis Tot Zo</title>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Cormorant Garamond', serif;
+      background-color: #f9fafb;
+      color: rgb(141, 141, 141);
+      text-transform: uppercase;
+      overflow-x: hidden;
+    }
+    header {
+      position: relative;
+      top: 0;
+      width: 100%;
+     background-color: transparent;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 5%;
+      height: 6em;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(0.66rem, 2vw, 1rem);
+      letter-spacing: 0.5em;
+    }
+    .logo img {
+      height: 100px;
+      margin: 1rem;
+    }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 25px;
+      height: 20px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 10001;
+    }
+    .hamburger span {
+      display: block;
+      height: 3px;
+      width: 100%;
+      background-color: #000;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+    nav {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(180, 180, 181, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid #444;
+      border-radius: 999px;
+      padding: 0.6rem 2rem;
+      display: flex;
+      gap: 2rem;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: normal;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      position: relative;
+      cursor: pointer;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 0%;
+      height: 2px;
+      background-color: #237b2e;
+      transition: width 0.3s ease;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    nav a:hover {
+      color: #880606;
+    }
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+      nav {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all 0.4s ease;
+        pointer-events: none;
+      }
+      nav.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 1000;
+      }
+      nav a {
+        font-size: 2rem;
+        margin: 1rem 0;
+      }
+    }
+    .cursor, .cursor-follower {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.1s ease;
+      z-index: 10000;
+    }
+    .cursor {
+      width: 8px;
+      height: 8px;
+      background-color: #333;
+      mix-blend-mode: difference;
+    }
+    .cursor-follower {
+      width: 30px;
+      height: 30px;
+      border: 2px solid #333;
+      opacity: 0.4;
+    }
+    .hero {
+      height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+    .hero-content h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+    }
+    .hero-content p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .hero-content button {
+      background: #237b2e;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .hero-content button:hover {
+      background: #9a2222;
+    }
+    .content {
+      padding: 100px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .search-container {
+      max-width: 500px;
+      margin: 0 auto 20px;
+      text-align: center;
+    }
+    .search-container input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+    }
+    .category-nav {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .category-nav button {
+      background: #237b2e;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    .category-nav button:hover {
+      background: #8f2222;
+    }
+    .category-nav button.active {
+      background: #237b2e;
+    }
+    .category-section {
+      margin-bottom: 50px;
+    }
+    .category-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 10px;
+      background: #f1f1f1;
+      border-radius: 2px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 40px;
+    }
+    .category-toggle h3 {
+      margin: 0;
+      font-size: 6rem;
+    }
+    .category-section.collapsed .grid {
+      display: none;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 10px;
+    }
+    .menu-item {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 15px;
+      background: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .menu-item h4 {
+      margin: 0 0 5px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      color: #333;
+    }
+    .menu-item p {
+      margin: 0 0 10px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .menu-item span {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      color: #333;
+    }
+    .menu-item button {
+      background: #237b2e;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      align-self: flex-end;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    .menu-item button:hover {
+      background: #922525;
+    }
+    .cart-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: 20px auto;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .cart-item button {
+      background: none;
+      border: none;
+      color: #ff4d4d;
+      cursor: pointer;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    .cart-checkout {
+      background: #8d2222;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      width: 100%;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+    .cart-checkout:hover {
+      background: #237b2e;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-content h3 {
+      margin-top: 0;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+    }
+    .modal-content label {
+      display: block;
+      margin: 10px 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+    }
+    .modal-content button {
+      background: #237b2e;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    .modal-content button:hover {
+      background: #237b2e;
+    }
+    .modal-content button.cancel {
+      background: #ff4d4d;
+      margin-left: 10px;
+    }
+    .modal-content button.cancel:hover {
+      background: #cc0000;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #237b2e;
+      color: #fff;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    .h3{
+      text-size-adjust: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor"></div>
+  <div class="cursor-follower"></div>
+  <div id="root"></div>
+  <script type="text/babel">
+
+    const Hero = ({ setCurrentPage }) => (
+      <div className="hero">
+        <div className="hero-content">
+          <h1>EETHUIS TOT ZO</h1>
+          <p>Ontdek onze heerlijke gerechten, van pizza's tot döner!</p>
+          <button onClick={() => setCurrentPage('menu')}>ONTDEK HET MENU</button>
+        </div>
+      </div>
+    );
+    // Suppress Babel standalone warning
+    const originalWarn = console.warn;
+    console.warn = function (...args) {
+      if (typeof args[0] === 'string' && args[0].includes('in-browser Babel transformer')) {
+        return;
+      }
+      originalWarn.apply(console, args);
+    };
+
+    const { useState, useMemo } = React;
+
+    // Placeholder menuData (replace with your full menuData)
+    const menuData = [
+  {
+    category: "Italiaanse pizza's",
+    items: [
+      { name: "Pizza Margherita", description: "Tomatensaus en kaas", price: 12.00, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)", "Olijven (€1.00)", "Paprika (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "Pizza Vegetariana", description: "Tomatensaus, kaas, paprika, champignons, uien, artisjok en olijven", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Funghi", description: "Tomatensaus, kaas en champignons", price: 14.00, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Mozzarella", description: "Tomatensaus, mozzarella kaas, verse tomaat en pesto", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Gorgonzola", description: "Tomatensaus, kaas en gorgonzola", price: 14.25, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Quattro Formaggi", description: "Tomatensaus, Goudse kaas, mozzarella, gorgonzola en Parmezaanse kaas", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Salami", description: "Tomatensaus, kaas en salami", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Americana", description: "Tomatensaus, kaas, ham en salami", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Pepperoni", description: "Tomatensaus, kaas, pepperoni, uien en jalapeño", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Prosciutto", description: "Tomatensaus, kaas en ham", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Capricciosa", description: "Tomatensaus, kaas, ham en champignons", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Quattro Stagioni", description: "Tomatensaus, kaas, ham, salami, champignons en paprika", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Hawaii", description: "Tomatensaus, kaas, ham en ananas", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Tonno", description: "Tomatensaus, kaas, tonijn en uien", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Napolitana", description: "Tomatensaus, kaas, ansjovis, artisjokken en olijven", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Shoarma", description: "Tomatensaus, kaas, shoarma en uien", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Pollo", description: "Tomatensaus, kaas, stukjes kip, paprika en uien", price: 15.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Kip Döner", description: "Tomatensaus, kaas, kip döner, paprika en uien", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Döner", description: "Tomatensaus, kaas, döner, paprika en uien", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Sucuk", description: "Tomatensaus, kaas, Turkse knoflookworst en uien", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza O Sole Mio", description: "Tomatensaus, kaas, ham, salami, paprika, ui, champignons en ei", price: 14.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Ramo", description: "Tomatensaus, kaas, kwart döner, kwart kip döner, kwart ham en kwart salami", price: 16.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza BBQ Meatlovers", description: "Tomatensaus, kaas, ham, salami, sucuk, pepperoni, shoarma, uien en een swirl van BBQ saus", price: 17.00, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pizza Hete Kip", description: "Tomatensaus, kaas, gegrilde kipfilet, uien en paprika", price: 15.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Spicy Chicken Mix", description: "Tomatensaus, kaas, hete kip, kip döner, uien en jalapeños", price: 16.00, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+    ],
+  },
+  {
+    category: "Amerikaanse Pizza (dikke bodem)",
+    items: [
+      { name: "Spicy Chicken Mix (Amerikaans)", description: "Tomatensaus, kaas, hete kip, kip döner, uien en jalapeño", price: 13.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Hete Kip (Amerikaans)", description: "Tomatensaus, kaas, gegrilde kipfilet, paprika en uien", price: 13.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "BBQ Meat Lovers (Amerikaans)", description: "Tomatensaus, kaas, ham, salami, pepperoni, sucuk, shoarma en uien", price: 14.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Sucuk (Amerikaans)", description: "Tomatensaus, kaas, Turkse knoflookworst en uien", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Ramo (Amerikaans)", description: "Tomatensaus, kaas, kwart kalfsdöner, kwart kip döner, kwart ham en kwart salami", price: 14.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "O Sole Mio (Amerikaans)", description: "Tomatensaus, kaas, ham, salami, champignon, paprika, uien en ei", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Döner (Amerikaans)", description: "Tomatensaus, kaas, kalfsdöner, paprika en uien", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Kip Döner (Amerikaans)", description: "Tomatensaus, kaas, kip döner, paprika en uien", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pollo (Amerikaans)", description: "Tomatensaus, kaas, stukjes kipfilet, paprika en uien", price: 13.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Shoarma (Amerikaans)", description: "Tomatensaus, kaas, shoarma en rode uien", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Tonno (Amerikaans)", description: "Tomatensaus, kaas, tonijn en rode uien", price: 12.75, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Hawaii (Amerikaans)", description: "Tomatensaus, kaas, ham en ananas", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Quattro Stagioni (Amerikaans)", description: "Tomatensaus, kaas, kwart ham, kwart salami, kwart champignon en een kwart paprika", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Capricciosa (Amerikaans)", description: "Tomatensaus, kaas, ham en champignons", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Prosciutto (Amerikaans)", description: "Tomatensaus, kaas en ham", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pepperoni (Amerikaans)", description: "Tomatensaus, kaas, pepperoni, rode uien en jalapeño", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Americana (Amerikaans)", description: "Tomatensaus, kaas, salami en ham", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Quattro Formaggi (Amerikaans)", description: "Tomatensaus, Goudse kaas, mozzarella, gorgonzola en Parmezaanse kaas", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Gorgonzola (Amerikaans)", description: "Tomatensaus, kaas en gorgonzola kaas", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Mozzarella (Amerikaans)", description: "Tomatensaus, kaas, verse tomaten, mozzarella kaas en pesto", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Funghi (Amerikaans)", description: "Tomatensaus, kaas en champignons", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Vegetariana (Amerikaans)", description: "Tomatensaus, kaas, paprika, champignons, uien, artisjok en olijven", price: 12.95, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Margherita (Amerikaans)", description: "Tomatensaus en kaas", price: 10.50, options: ["26 CM (€0.00)", "32 CM (€2.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+    ],
+  },
+  {
+    category: "Calzone",
+    items: [
+      { name: "Calzone", description: "Tomatensaus, kaas, ham, salami, champignons, paprika en uien", price: 14.00, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Calzone Shoarma", description: "Tomatensaus, kaas, shoarma, champignons, paprika en uien", price: 15.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Calzone Kip", description: "Tomatensaus, kaas, kip döner, champignons, paprika en uien", price: 15.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Calzone Döner", description: "Tomatensaus, kaas, döner, champignons, paprika en uien", price: 15.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Calzone Hete Kip", description: "Tomatensaus, kaas, hete kip, champignons, paprika en uien", price: 15.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Calzone Vegetariana", description: "Tomatensaus, kaas, aubergine, courgette, champignons, paprika en uien", price: 15.50, options: ["Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+    ],
+  },
+  {
+    category: "Pasta's",
+    items: [
+      { name: "Kip Kerrie", description: "Stukjes kipfilet met kerrie, paprika, champignons en ui in roomsaus", price: 16.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Napolitana", description: "Tomatensaus en Parmezaanse kaas", price: 14.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Arrabiata", description: "Pittige tomatensaus en Parmezaanse kaas", price: 13.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Vegetariana", description: "Tomatensaus, knoflook, champignon, paprika, uien, artisjok, Parmezaanse kaas en olijven", price: 15.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Funghi", description: "Champignons, knoflook, room en Parmezaanse kaas", price: 15.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Quattro Formaggi", description: "Gorgonzola, mozzarella, Goudse kaas, Parmezaanse kaas en room", price: 15.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Bolognese", description: "Bolognesesaus en Parmezaanse kaas", price: 15.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pollo", description: "Kipfiletreepjes, paprika, uien, tomatensaus met room en Parmezaanse kaas", price: 16.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Kip met Champignonroomsaus", description: "Kipfiletreepjes, champignons, uien, Parmezaanse kaas en room", price: 16.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Pesto", description: "Stukjes kipfilet, tomaat, knoflook, pesto, Parmezaanse kaas en room", price: 16.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Carbonara", description: "Ham, ei, room en Parmezaanse kaas", price: 15.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+      { name: "Tonno", description: "Tonijn, uien, olijven, Parmezaanse kaas en tomatensaus", price: 15.50, options: ["Penne (€0.00)", "Tagliatelle (€0.00)", "Champignon (€1.00)", "Uien (€1.00)", "Jalapeño (€1.00)", "Ananas (€1.00)", "Ei (€1.00)", "Mais (€1.00)"] },
+    ],
+  },
+  {
+    category: "Kip gerechten",
+    items: [
+      { name: "Kip Pesto", description: "Stukjes kipfilet met pesto en tomaat in roomsaus", price: 16.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Extra vlees (€3.00)", "Coca-Cola 33cl (€2.50)", "Fanta Orange 33cl (€2.50)"] },
+      { name: "Kip Kerrie", description: "Stukjes kipfilet met kerrie, paprika, champignons en ui in roomsaus", price: 16.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Extra vlees (€3.00)", "Coca-Cola 33cl (€2.50)", "Fanta Orange 33cl (€2.50)"] },
+      { name: "Kip met 4-kazen saus", description: "Kip met Goudse kaas, gorgonzola, mozzarella en Parmezaanse kaas in roomsaus", price: 16.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Extra vlees (€3.00)", "Coca-Cola 33cl (€2.50)", "Fanta Orange 33cl (€2.50)"] },
+      { name: "Spicy Chicken", description: "Kip met uien en paprika in pittige tomatensaus", price: 16.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Extra vlees (€3.00)", "Coca-Cola 33cl (€2.50)", "Fanta Orange 33cl (€2.50)"] },
+      { name: "Kip met Champignonroomsaus", description: "Stukjes kipfilet met champignons en roomsaus", price: 16.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Extra vlees (€3.00)", "Coca-Cola 33cl (€2.50)", "Fanta Orange 33cl (€2.50)"] },
+    ],
+  },
+  {
+    category: "Kapsalon",
+    items: [
+      { name: "XXL Kapsalon Kip Kerrie", description: "Kipfilet in roomsaus met rode uien en kerrie", price: 12.50, options: ["Knoflooksaus (€0.50)", "Uiensaus (€0.50)", "Sambal (€0.50)", "Geen saus (€0.00)", "Bakje salade (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "XXL Kapsalon Kip Champignonroomsaus", description: "Kipfilet in roomsaus met champignons", price: 12.50, options: ["Knoflooksaus (€0.50)", "Uiensaus (€0.50)", "Sambal (€0.50)", "Geen saus (€0.00)", "Bakje salade (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "XXL Kapsalon Kip Pesto", description: "Kipfilet in roomsaus met cherrytomaten en pesto", price: 12.50, options: ["Knoflooksaus (€0.50)", "Uiensaus (€0.50)", "Sambal (€0.50)", "Geen saus (€0.00)", "Bakje salade (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "XXL Kapsalon Döner", description: "Kalfsdöner, friet, mozzarella, salade", price: 11.00, options: ["Knoflooksaus (€0.50)", "Uiensaus (€0.50)", "Sambal (€0.50)", "Geen saus (€0.00)", "Bakje salade (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "XXL Kapsalon Kip", description: "Kipdöner, friet, mozzarella, salade", price: 11.00, options: ["Knoflooksaus (€0.50)", "Uiensaus (€0.50)", "Sambal (€0.50)", "Geen saus (€0.00)", "Bakje salade (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "XXL Kapsalon Lamsshoarma", description: "Lamsshoarma, friet, mozzarella, salade", price: 12.00, options: ["Knoflooksaus (€0.50)", "Uiensaus (€0.50)", "Sambal (€0.50)", "Geen saus (€0.00)", "Bakje salade (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "XXL Kapsalon Falafel", description: "Falafel, friet, mozzarella, salade", price: 11.00, options: ["Knoflooksaus (€0.50)", "Uiensaus (€0.50)", "Sambal (€0.50)", "Geen saus (€0.00)", "Bakje salade (€1.00)"] },
+      { name: "XXL Kapsalon Hete Kip", description: "Hete kip, friet, mozzarella, salade", price: 12.50, options: ["Knoflooksaus (€0.50)", "Uiensaus (€0.50)", "Sambal (€0.50)", "Geen saus (€0.00)", "Bakje salade (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "XXL Kapsalon Toktok", description: "Gemarineerde kipfilet, friet, mozzarella, salade", price: 12.50, options: ["Knoflooksaus (€0.50)", "Uiensaus (€0.50)", "Sambal (€0.50)", "Geen saus (€0.00)", "Bakje salade (€1.00)", "Extra vlees (€2.00)"] },
+    ],
+  },
+  {
+    category: "Broodjes",
+    items: [
+      { name: "Broodje Döner", description: "Kalfsdöner, salade, saus", price: 7.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "Broodje Kip Döner", description: "Kipdöner, salade, saus", price: 7.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "Broodje Lamsshoarma", description: "Lamsshoarma, salade, saus", price: 8.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "Broodje Kofte Kebab", description: "Kofte kebab, salade, saus", price: 8.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "Broodje Hete Kip", description: "Hete kip, salade, saus", price: 8.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)", "Extra vlees (€2.00)"] },
+      { name: "Broodje Falafel", description: "Falafel, salade, tahin", price: 7.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)"] },
+      { name: "Broodje Toktok", description: "Gemarineerde kipfilet, salade, saus", price: 8.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)", "Extra vlees (€2.00)"] },
+    ],
+  },
+  {
+    category: "Schotels en grill",
+    items: [
+      { name: "Lamsshoarma Schotel", description: "Met salade en patat of rijst", price: 15.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Pitabrood (€0.25)", "Turks brood (€0.75)", "Extra Kip Döner (€5.00)"] },
+      { name: "Döner Kebab Schotel", description: "Kalfsdöner, salade, patat of rijst", price: 14.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Pitabrood (€0.25)", "Turks brood (€0.75)", "Extra vlees (€3.00)"] },
+      { name: "Kip Shoarma Schotel", description: "Kipshoarma, salade, patat of rijst", price: 14.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Pitabrood (€0.25)", "Turks brood (€0.75)", "Extra vlees (€3.00)"] },
+      { name: "Kofte Kebab Schotel", description: "6 stukken lamsgehakt gemixt met kruiden, salade, patat of rijst", price: 16.00, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Pitabrood (€0.25)", "Turks brood (€0.75)", "Extra Kip Döner (€5.00)"] },
+      { name: "Kip Shaslick", description: "3 gemarineerde kipfilet spiesen, salade, patat of rijst", price: 16.00, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Pitabrood (€0.25)", "Turks brood (€0.75)", "Extra Kip Döner (€5.00)"] },
+      { name: "Hete Kip Schotel", description: "Stukjes pittig gemarineerde kippenfilet, paprika en uien, salade, patat of rijst", price: 15.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Pitabrood (€0.25)", "Turks brood (€0.75)", "Extra vlees (€3.00)"] },
+      { name: "Falafel Schotel", description: "Gefrituurde balletjes gemaakt van kikkererwten en verschillende kruiden, salade, patat of rijst", price: 13.50, options: ["Patat (€0.00)", "Rijst (€0.25)", "Penne (€0.00)", "Pitabrood (€0.25)", "Turks brood (€0.75)"] },
+    ],
+  },
+  {
+    category: "Dürüm",
+    items: [
+      { name: "Dürüm Shoarma", description: "Lamsshoarma, salade, saus", price: 8.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€0.50)"] },
+      { name: "Dürüm Döner", description: "Kalfsdöner, salade, saus", price: 6.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€0.50)", "Extra vlees (€2.00)"] },
+      { name: "Dürüm Kip Döner", description: "Kipdöner, salade, saus", price: 6.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€0.50)", "Extra vlees (€2.00)"] },
+      { name: "Dürüm Toktok", description: "Gemarineerde kipfilet, salade, saus", price: 8.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€0.50)", "Extra vlees (€2.00)"] },
+      { name: "Chicken Tender Wrap", description: "Wrap met chicken tenders, chillisaus en salade", price: 8.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€0.50)"] },
+      { name: "Dürüm Falafel", description: "Falafel, salade, tahin", price: 6.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€0.50)"] },
+    ],
+  },
+  {
+    category: "Turkse pizza",
+    items: [
+      { name: "Turkse Pizza", description: "Salade, saus", price: 4.00, options: ["Extra kaas (€0.50)", "Extra vlees (€2.00)"] },
+      { name: "Turkse Pizza Kaas", description: "Mozzarella, salade, saus", price: 5.00, options: ["Extra kaas (€0.50)", "Extra vlees (€2.00)"] },
+      { name: "Turkse Pizza Döner", description: "Kalfsdöner, salade, saus", price: 7.50, options: ["Extra kaas (€0.50)", "Extra vlees (€2.00)"] },
+      { name: "Turkse Pizza Kip", description: "Kipdöner, salade, saus", price: 7.50, options: ["Extra kaas (€0.50)", "Extra vlees (€2.00)"] },
+      { name: "Turkse Pizza Lamsshoarma", description: "Lamsshoarma, salade, saus", price: 8.50, options: ["Extra kaas (€0.50)", "Extra vlees (€2.00)"] },
+    ],
+  },
+  {
+    category: "Pita broodjes",
+    items: [
+      { name: "Pita Kaas", description: "Mozzarella, salade", price: 4.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)"] },
+      { name: "Pita Kaas Gezond", description: "Mozzarella, tomaat, komkommer, sla", price: 5.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)"] },
+      { name: "Pita Kaas & Salami", description: "Mozzarella, salami, salade", price: 5.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Pita Ham en Kaas", description: "Mozzarella, ham, salade", price: 5.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)"] },
+      { name: "Pita Kaas Hawaii", description: "Mozzarella, ham, ananas, salade", price: 5.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Pita Sucuk en Kaas", description: "Mozzarella, Turkse knoflookworst, salade", price: 5.50, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)", "Extra kaas (€1.00)"] },
+      { name: "Pita Kaas & Döner", description: "Mozzarella, kalfsdöner, salade", price: 6.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Pita Kaas & Shoarma", description: "Mozzarella, lamsshoarma, salade", price: 6.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Pita Kaas & Kip Döner", description: "Mozzarella, kipdöner, salade", price: 6.00, options: ["6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+    ],
+  },
+  {
+    category: "Burgers",
+    items: [
+      { name: "Hamburger", description: "Rundvlees, sla, tomaat, saus", price: 5.00, options: ["Extra cheddar kaas (€1.00)", "6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Cheeseburger", description: "Rundvlees, cheddar, sla, tomaat, saus", price: 5.50, options: ["Extra cheddar kaas (€1.00)", "6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Turkse Hamburger", description: "Rundvlees, sla, tomaat, saus", price: 6.00, options: ["Extra cheddar kaas (€1.00)", "6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Turkse Hamburger met Kaas", description: "Rundvlees, cheddar, sla, tomaat, saus", price: 6.50, options: ["Extra cheddar kaas (€1.00)", "6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Double Burger", description: "Dubbel rundvlees, sla, tomaat, saus", price: 7.50, options: ["Extra cheddar kaas (€1.00)", "6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Double Cheezy Burger", description: "Dubbel rundvlees, cheddar, sla, tomaat, saus", price: 8.50, options: ["Extra cheddar kaas (€1.00)", "6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Spicy Chickenburger", description: "Pittige kip, sla, mayo", price: 5.50, options: ["Extra cheddar kaas (€1.00)", "6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+      { name: "Crispy Chickenburger", description: "Krokante kip, sla, mayo", price: 5.50, options: ["Extra cheddar kaas (€1.00)", "6 Crispy hotwings (€3.00)", "3 Chicken tenders (€3.50)", "6 Chilli cheese nuggets (€3.00)", "5 Kaasstengels (€5.00)"] },
+    ],
+  },
+  {
+    category: "Side dishes & fingerfood",
+    items: [
+      { name: "Kaassoufflé", description: "Gefrituurde kaassoufflé", price: 2.50, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)", "Broodje (€1.00)"] },
+      { name: "Patat", description: "Verse friet", price: 3.00, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)"] },
+      { name: "Crispy Hotwings", description: "6 stuks pittige kippenvleugels", price: 5.00, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)", "6 Hotwings (€3.00)", "12 Hotwings (€6.00)"] },
+      { name: "Chicken Strips", description: "3 stuks kipstrips", price: 4.50, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)", "3 stuks (€0.00)", "6 stuks (€3.00)"] },
+      { name: "Chilli Cheese Nuggets", description: "6 stuks chilli cheese nuggets", price: 4.00, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)", "6 stuks (€0.00)", "12 stuks (€4.00)"] },
+      { name: "Chicken Nuggets", description: "6 stuks kipnuggets", price: 3.50, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)", "6 stuks (€0.00)", "12 stuks (€3.50)"] },
+      { name: "Kaasstengels", description: "5 stuks kaasstengels", price: 5.00, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)", "5 stuks (€0.00)", "10 stuks (€5.00)"] },
+      { name: "Frikandel", description: "Gefrituurde frikandel", price: 2.50, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)", "Broodje (€1.00)"] },
+      { name: "Kipcorn", description: "Gefrituurde kipcorn", price: 2.50, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)", "Broodje (€1.00)"] },
+      { name: "Rundvlees Kroket", description: "Gefrituurde rundvleeskroket", price: 2.50, options: ["Barbecuesaus (€0.50)", "Chillisaus (€0.50)", "Mayonaise (€0.50)", "Ketchup (€0.50)", "Broodje (€1.00)"] },
+    ],
+  },
+  {
+    category: "Overige en extra's",
+    items: [
+      { name: "Barbecuesaus", description: "Barbecuesaus", price: 1.00, options: [] },
+      { name: "Chillisaus", description: "Chillisaus", price: 1.00, options: [] },
+      { name: "Knoflooksaus", description: "Romige knoflooksaus", price: 1.00, options: [] },
+      { name: "Uiensaus", description: "Uiensaus", price: 1.00, options: [] },
+      { name: "Sambal", description: "Pittige sambalsaus", price: 0.50, options: [] },
+      { name: "Extra Hete Saus", description: "Extra hete saus", price: 1.00, options: [] },
+      { name: "Mayonaise", description: "Mayonaise", price: 0.50, options: [] },
+      { name: "Ketchup", description: "Ketchup", price: 0.50, options: [] },
+      { name: "Turks Brood", description: "Turks brood", price: 1.00, options: [] },
+      { name: "Pita Brood", description: "Pita brood", price: 1.00, options: [] },
+      { name: "Salade", description: "Extra salade", price: 1.00, options: [] },
+    ],
+  },
+  {
+    category: "Ben & Jerry's 100 ml",
+    items: [
+      { name: "Cookie Dough", description: "Vanille-ijs met koekdeegstukjes", price: 3.75, options: [] },
+      { name: "Chocolate Fudge Brownie", description: "Chocolade-ijs met brownie-stukjes", price: 3.75, options: [] },
+      { name: "Caramel Chew Chew", description: "Karamel-ijs met karamelstukjes", price: 3.75, options: [] },
+      { name: "Strawberry Cheesecake", description: "Aardbei-ijs met cheesecake-stukjes", price: 3.75, options: [] },
+    ],
+  },
+  {
+    category: "Ben & Jerry's 500 ml",
+    items: [
+      { name: "Netflix & Chill'd", description: "Pindakaas-ijs met pretzel en brownie", price: 8.25, options: [] },
+      { name: "Cookie Dough", description: "Vanille-ijs met koekdeegstukjes", price: 8.25, options: [] },
+      { name: "Chocolate Fudge Brownie", description: "Chocolade-ijs met brownie-stukjes", price: 8.25, options: [] },
+      { name: "Caramel Chew Chew", description: "Karamel-ijs met karamelstukjes", price: 8.25, options: [] },
+      { name: "Strawberry Cheesecake", description: "Aardbei-ijs met cheesecake-stukjes", price: 8.25, options: [] },
+      { name: "Chunky Monkey", description: "Banaan-ijs met chocolade en walnoten", price: 8.25, options: [] },
+    ],
+  },
+  {
+    category: "Nagerechten",
+    items: [
+      { name: "Double Chocolate Chip Cookie XL", description: "De échte American chocolate chip cookies. Deze cookies zijn extra groot en een absoluut genot voor de cookie liefhebbers!", price: 2.75, options: [] },
+      { name: "Milk Chocolate Chip XL", description: "De échte American chocolate chip cookies. Deze cookies zijn extra groot en een absoluut genot voor de cookie liefhebbers!", price: 2.75, options: [] },
+      { name: "Serifoglu Baklava", description: "Traditionele Turkse baklava", price: 6.00, options: [] },
+    ],
+  },
+  {
+    category: "Dranken",
+    items: [
+      { name: "Coca-Cola", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Coca-Cola Light", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Coca-Cola Zero", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Fanta Orange", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Fanta Cassis", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Fanta Lemon", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Fanta Exotic", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Sprite", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Fuse Tea Peach Hibiscus", description: "33cl blikje", price: 2.75, options: [] },
+      { name: "Ice Tea", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Ice Tea Green", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "AA Drink", description: "33cl blikje", price: 2.75, options: [] },
+      { name: "Chocomel", description: "33cl blikje", price: 2.75, options: [] },
+      { name: "Fristi", description: "33cl blikje", price: 2.75, options: [] },
+      { name: "Fernandez Groen", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Fernandez Rood", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Fernandez Blauw", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Fernandez Geel", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Minute Maid Orange", description: "33cl blikje", price: 2.75, options: [] },
+      { name: "Minute Maid Appel", description: "33cl blikje", price: 2.75, options: [] },
+      { name: "Red Bull", description: "25cl blikje", price: 3.00, options: [] },
+      { name: "Maaza Mango", description: "33cl blikje", price: 2.75, options: [] },
+      { name: "Maaza Tropical", description: "33cl blikje", price: 2.75, options: [] },
+      { name: "Ayran", description: "25cl", price: 2.00, options: [] },
+      { name: "Spa Blauw", description: "33cl flesje", price: 2.50, options: [] },
+      { name: "Spa Rood", description: "33cl flesje", price: 2.50, options: [] },
+      { name: "Fles Witte Wijn", description: "75cl fles", price: 14.50, options: [] },
+      { name: "Fles Rode Wijn", description: "75cl fles", price: 14.50, options: [] },
+      { name: "Fles Rosé Wijn", description: "75cl fles", price: 14.50, options: [] },
+      { name: "Bacardi Cola", description: "33cl blikje", price: 3.50, options: [] },
+      { name: "Bier", description: "33cl blikje", price: 2.50, options: [] },
+      { name: "Bier Six-pack", description: "6 x 33cl blikjes", price: 13.50, options: [] },
+      { name: "Amstel 0.5L", description: "50cl blik", price: 3.00, options: [] },
+    ],
+  },
+]
+
+      // Replace with your full menuData here
+
+    const Header = ({ setCurrentPage }) => {
+      const [isNavOpen, setIsNavOpen] = useState(false);
+      const toggleNav = () => setIsNavOpen(!isNavOpen);
+
+      return (
+        <header>
+          <div className="logo">
+            <img src="eethuis.png" alt="Eethuis Ramo Logo" />
+          </div>
+          <div className={`hamburger ${isNavOpen ? 'active' : ''}`} onClick={toggleNav}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <nav className={isNavOpen ? 'active' : ''}>
+         
+            <a href="index.html" onClick={() => { setCurrentPage('home'); toggleNav(); }}>HOME</a>
+            <a href="menu.html" onClick={() => { setCurrentPage('menu'); toggleNav(); }}>MENU</a>
+            <a href="checkout.html" onClick={() => { setCurrentPage('cart'); toggleNav(); }}>WINKELWAGEN</a>
+            <a href="overons.html" onClick={() => { setCurrentPage('about'); toggleNav(); }}>OVER ONS</a>
+            <a href="contact.html" onClick={() => { setCurrentPage('contact'); toggleNav(); }}>CONTACT</a>
+            
+          </nav>
+          
+        </header>
+      );
+    };
+  
+    
+ 
+
+    const MenuItem = ({ item, onAddToCart }) => (
+      <div className="menu-item">
+        <h4>{item.name}</h4>
+        <p>{item.description}</p>
+        <span>€{item.price.toFixed(2)}</span>
+        <button onClick={() => onAddToCart(item)}>TOEVOEGEN</button>
+      </div>
+    );
+
+    const OptionsModal = ({ item, onClose, onAddToCart }) => {
+      const [selectedOptions, setSelectedOptions] = useState([]);
+
+      const toggleOption = (option) => {
+        setSelectedOptions(prev =>
+          prev.includes(option)
+            ? prev.filter(o => o !== option)
+            : [...prev, option]
+        );
+      };
+
+      const calculateTotalPrice = () => {
+        const optionPrices = selectedOptions.reduce((sum, option) => {
+          const match = option.match(/€([\d.]+)/);
+          return match ? sum + parseFloat(match[1]) : sum;
+        }, 0);
+        return (item.price + optionPrices).toFixed(2);
+      };
+
+      const handleAddToCart = () => {
+        onAddToCart({
+          ...item,
+          selectedOptions,
+          totalPrice: parseFloat(calculateTotalPrice())
+        });
+        onClose();
+      };
+
+      return (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>{item.name} - OPTIES</h3>
+            {item.options && item.options.length > 0 ? (
+              item.options.map((option, index) => (
+                <label key={index}>
+                  <input
+                    type="checkbox"
+                    checked={selectedOptions.includes(option)}
+                    onChange={() => toggleOption(option)}
+                  />
+                  {option}
+                </label>
+              ))
+            ) : (
+              <p>Geen opties beschikbaar.</p>
+            )}
+            <p>Totaal: €{calculateTotalPrice()}</p>
+            <button onClick={handleAddToCart}>TOEVOEGEN AAN WINKELWAGEN</button>
+            <button className="cancel" onClick={onClose}>ANNULEREN</button>
+          </div>
+        </div>
+      );
+    };
+
+    const Menu = ({ onAddToCart }) => {
+      const [searchTerm, setSearchTerm] = useState('');
+      const [selectedCategory, setSelectedCategory] = useState('');
+      const [collapsedCategories, setCollapsedCategories] = useState({});
+      const [modalItem, setModalItem] = useState(null);
+
+      const filteredMenu = useMemo(() => {
+        return menuData
+          .map(category => ({
+            ...category,
+            items: category.items.filter(item =>
+              item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
+            )
+          }))
+          .filter(category =>
+            category.items.length > 0 &&
+            (!selectedCategory || category.category === selectedCategory)
+          );
+      }, [searchTerm, selectedCategory]);
+
+      const toggleCategory = (category) => {
+        setCollapsedCategories(prev => ({
+          ...prev,
+          [category]: !prev[category]
+        }));
+      };
+
+      const handleAddToCart = (item) => {
+        if (item.options && item.options.length > 0) {
+          setModalItem(item);
+        } else {
+          onAddToCart({ ...item, totalPrice: item.price, selectedOptions: [] });
+        }
+      };
+
+      return (
+        <div className="content">
+          <h2 className="text-3xl font-['Bebas_Neue'] mb-4">MENU</h2>
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Zoek gerechten..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="category-nav">
+            <button
+              className={!selectedCategory ? 'active' : ''}
+              onClick={() => setSelectedCategory('')}
+            >
+              ALLE
+            </button>
+            {menuData.map((category, index) => (
+              <button
+                key={index}
+                className={selectedCategory === category.category ? 'active' : ''}
+                onClick={() => setSelectedCategory(category.category)}
+              >
+                {category.category}
+              </button>
+            ))}
+          </div>
+          {filteredMenu.map((category, index) => (
+            <div
+              key={index}
+              className={`category-section ${collapsedCategories[category.category] ? 'collapsed' : ''}`}
+            >
+              <div className="category-toggle" onClick={() => toggleCategory(category.category)}>
+                <h3>{category.category}</h3>
+                <span>{collapsedCategories[category.category] ? '+' : '-'}</span>
+              </div>
+              <div className="grid">
+                {category.items.map((item, idx) => (
+                  <MenuItem key={idx} item={item} onAddToCart={handleAddToCart} />
+                ))}
+              </div>
+            </div>
+          ))}
+          {modalItem && (
+            <OptionsModal
+              item={modalItem}
+              onClose={() => setModalItem(null)}
+              onAddToCart={onAddToCart}
+            />
+          )}
+        </div>
+      );
+    };
+
+    const Cart = ({ cart, setCart }) => {
+      const removeFromCart = (index) => {
+        const newCart = cart.filter((_, i) => i !== index);
+        setCart(newCart);
+        localStorage.setItem('cart', JSON.stringify(newCart));
+      };
+
+      const totalPrice = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+
+      const handleCheckout = () => {
+  window.location.href = 'checkout.html';
+};
+      return (
+        <div className="content">
+          <h2 className="text-3xl font-['Bebas_Neue'] mb-4">WINKELWAGEN</h2>
+          <div className="cart-container">
+            {cart.length === 0 ? (
+              <p>Je winkelwagen is leeg.</p>
+            ) : (
+              <>
+                {cart.map((item, index) => (
+                  <div key={index} className="cart-item">
+                    <div>
+                      <h4>{item.name}</h4>
+                      {item.selectedOptions && item.selectedOptions.length > 0 && (
+                        <p>Opties: {item.selectedOptions.join(', ')}</p>
+                      )}
+                      <p>€{item.totalPrice.toFixed(2)}</p>
+                    </div>
+                    <button onClick={() => removeFromCart(index)}>VERWIJDER</button>
+                  </div>
+                ))}
+                <h3>Totaal: €{totalPrice.toFixed(2)}</h3>
+                <button className="cart-checkout" onClick={handleCheckout}>BESTELLEN</button> 
+              </>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const About = () => (
+      <div className="content">
+        <h2 className="text-3xl font-['Bebas_Neue']">OVER ONS</h2>
+        <p>Info over Eethuis Tot Zo...</p>
+      </div>
+    );
+
+    const Contact = () => (
+      <div className="content">
+        <h2 className="text-3xl font-['Bebas_Neue']">CONTACT</h2>
+        <p>Contactgegevens...</p>
+      </div>
+    );
+
+    const App = () => {
+      const [cart, setCart] = useState(() => {
+        const savedCart = localStorage.getItem('cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+      });
+      const [currentPage, setCurrentPage] = useState('menu');
+
+      const addToCart = (item) => {
+        const newCart = [...cart, item];
+        setCart(newCart);
+        localStorage.setItem('cart', JSON.stringify(newCart));
+      };
+
+      const renderPage = () => {
+        switch (currentPage) {
+          case 'home':
+            return <Hero setCurrentPage={setCurrentPage} />;
+          case 'menu':
+            return <Menu onAddToCart={addToCart} />;
+          case 'cart':
+            return <Cart cart={cart} setCart={setCart} />;
+          case 'about':
+            return <About />;
+          case 'contact':
+            return <Contact />;
+          default:
+            return <Hero setCurrentPage={setCurrentPage} />;
+        }
+      };
+
+      return (
+        <div>
+          <Header setCurrentPage={setCurrentPage} />
+          {renderPage()}
+          <footer>
+            <p>© 2025 Eethuis Tot Zo. Alle rechten voorbehouden.</p>
+          </footer>
+        </div>
+      );
+    };
+
+    // Custom cursor
+    const initCursor = () => {
+      const cursor = document.querySelector('.cursor');
+      const follower = document.querySelector('.cursor-follower');
+      let mouseX = 0, mouseY = 0;
+      let followerX = 0, followerY = 0;
+
+      document.addEventListener('mousemove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+      });
+
+      function animate() {
+        followerX += (mouseX - followerX) * 0.1;
+        followerY += (mouseY - followerY) * 0.1;
+        follower.style.left = followerX + 'px';
+        follower.style.top = followerY + 'px';
+        requestAnimationFrame(animate);
+      }
+      animate();
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+    initCursor();
+  </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eethuis Tot Zo</title>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Cormorant Garamond', serif;
+      background-color: #f9fafb;
+      color: rgb(141, 141, 141);
+      text-transform: uppercase;
+      overflow-x: hidden;
+    }
+    header {
+      position: relative;
+      top: 0;
+      width: 100%;
+      background-color: transparent;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 5%;
+      height: 6em;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size:  clamp(0.66rem, 2vw, w%, 1rem);
+      letter-spacing: 0.5em;
+    }
+    .logo img {
+      height: 100px;
+      margin: 1rem;
+    }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 25px;
+      height: 20px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    .hamburger span {
+      display: block;
+      height: 3px;
+      width: 100%;
+      background-color: #000;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+    nav {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(180, 180, 181, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid #444;
+      border-radius: 999px;
+      padding: 0.6rem 2rem;
+      display: flex;
+      gap: 2rem;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: normal;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      position: relative;
+      cursor: pointer;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 0%;
+      height: 2px;
+      background-color: #237b2e;
+      transition: width 0.3s ease;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    nav a:hover {
+      color: #880606;
+    }
+    @media screen and (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+      nav {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all 0.4s ease;
+        pointer-events: none;
+      }
+      nav.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 1000;
+      }
+      nav a {
+        font-size: 2rem;
+        margin: 1rem 0;
+      }
+    }
+    .hero {
+      height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+    .hero-content h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+    }
+    .hero-content p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .hero-content button {
+      background: #237b2e;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .hero-content button:hover {
+      background: #9a2222;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #237b2e;
+      color: #fff;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const Hero = () => (
+      <div className="hero">
+        <div className="hero-content">
+          <h1>EETHUIS TOT ZO</h1>
+          <p>Ontdek onze heerlijke gerechten, van pizza's tot döner!</p>
+          <button onClick={() => window.location.href = 'menu.html'}>ONTDEK HET MENU</button>
+        </div>
+      </div>
+    );
+
+    const Header = () => {
+      const [isNavOpen, setIsNavOpen] = React.useState(false);
+      const toggleNav = () => setIsNavOpen(!isNavOpen);
+
+      return (
+        <header>
+          <div className="logo">
+            <img src="eethuis.png" alt="Eethuis Ramo Logo" />
+          </div>
+          <div className={`hamburger ${isNavOpen ? 'active' : ''}`} onClick={toggleNav}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <nav className={isNavOpen ? 'active' : ''}>
+            <a href="index.html" onClick={toggleNav}>HOME</a>
+            <a href="menu.html" onClick={toggleNav}>MENU</a>
+            <a href="checkout.php" onClick={toggleNav}>WINKELWAGEN</a>
+            <a href="overons.html" onClick={toggleNav}>OVER ONS</a>
+            <a href="contact.html" onClick={toggleNav}>CONTACT</a>
+          </nav>
+        </header>
+      );
+    };
+
+    const App = () => (
+      <div>
+        <Header />
+        <Hero />
+        <footer>
+          <p>© 2025 Eethuis Tot Zo. Alle rechten voorbehouden.</p>
+        </footer>
+      </div>
+    );
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
