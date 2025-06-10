@@ -91,12 +91,7 @@
       background-color: #237b2e;
       transition: width 0.3s ease;
     }
-    nav a:hover::after {
-      width: 100%;
-    }
-    nav a:hover {
-      color: #880606;
-    }
+    
     @media (max-width: 768px) {
       .hamburger {
     display: flex;
@@ -149,9 +144,7 @@
   nav a::after {
     background-color: #237b2e; /* Green underline to match theme */
   }
-  nav a:hover {
-    color: #880606; /* Red hover effect to match theme */
-  }
+
     }
     .cursor, .cursor-follower {
       position: fixed;
@@ -222,13 +215,7 @@
       font-size: 1.2rem;
       margin-top: 10px;
     }
-    .form-container button:hover {
-      background: #9a2222;
-    }
-    #cash-options {
-      display: none;
-      margin-top: 10px;
-    }
+
     footer {
       text-align: center;
       padding: 20px;
@@ -299,21 +286,10 @@
         <select id="payment-method" name="payment-method" required>
           <option value="" disabled selected>Kies een betaalmethode</option>
           <option value="ideal">iDEAL</option>
-          <option value="cash">Contant</option>
+        
         </select>
 
-        <!-- Cash Payment Options -->
-        <div id="cash-options">
-          <label for="cash-amount">Contant Betalen Met:</label>
-          <select id="cash-amount" name="cash-amount">
-            <option value="gepast">Gepast</option>
-            <option value="10">10 Euros</option>
-            <option value="20">20 Euros</option>
-            <option value="50">50 Euros</option>
-            <option value="100">100 Euros</option>
-          </select>
-        </div>
-
+     
         <!-- Hidden input for cart items -->
         <input type="hidden" id="cart-data" name="cart" />
 
@@ -409,55 +385,8 @@
         return;
       }
 
-      if (paymentMethod === 'cash') {
-        // For cash payments, submit the form immediately
-        checkoutForm.submit();
-        localStorage.removeItem('cart');
-      } else if (paymentMethod === 'ideal') {
-        // For iDEAL payments, initiate Mollie payment
-        try {
-          const totalAmount = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-          if (typeof totalAmount !== 'number' || isNaN(totalAmount)) {
-            throw new Error('Ongeldig totaalbedrag.');
-          }
 
-          const createPayment = async () => {
-            const response = await fetch('https://api.mollie.com/v2/payments', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${MOLLIE_API_KEY}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                amount: {
-                  currency: 'EUR',
-                  value: totalAmount.toFixed(2),
-                },
-                description: 'Bestelling bij Eethuis Tot Zo',
-                redirectUrl: window.location.href + '?payment=completed',
-                webhookUrl: 'YOUR_WEBHOOK_URL', // Replace with your webhook URL
-                method: 'ideal',
-                metadata: {
-                  order_id: 'order_' + Date.now(),
-                },
-              }),
-            });
-
-            const paymentData = await response.json();
-            if (paymentData._links && paymentData._links.checkout) {
-              window.location.href = paymentData._links.checkout.url;
-            } else {
-              throw new Error('Failed to create Mollie payment');
-            }
-          };
-          await createPayment();
-        } catch (error) {
-          console.error('Error creating Mollie payment:', error.message);
-          alert('Er is een fout opgetreden bij het starten van de betaling. Probeer het opnieuw.');
-        }
-      }
-    });
-
+          
     // Check URL for payment redirect (after Mollie payment)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('payment') === 'completed') {
@@ -488,30 +417,6 @@
       verifyPayment();
     }
 
-    // Custom cursor
-    const initCursor = () => {
-      const cursor = document.querySelector('.cursor');
-      const follower = document.querySelector('.cursor-follower');
-      let mouseX = 0, mouseY = 0;
-      let followerX = 0, followerY = 0;
-
-      document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        cursor.style.left = mouseX + 'px';
-        cursor.style.top = mouseY + 'px';
-      });
-
-      function animate() {
-        followerX += (mouseX - followerX) * 0.1;
-        followerY += (mouseY - followerY) * 0.1;
-        follower.style.left = followerX + 'px';
-        follower.style.top = followerY + 'px';
-        requestAnimationFrame(animate);
-      }
-      animate();
-    };
-
  // Hamburger menu toggle
 const hamburger = document.querySelector('.hamburger');
 const nav = document.querySelector('nav');
@@ -534,9 +439,6 @@ document.querySelectorAll('nav a').forEach(link => {
   });
 });
 
-    // Initialize cursor
-    initCursor();
-    
   </script>
 </body>
 </html>
