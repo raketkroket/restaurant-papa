@@ -82,22 +82,7 @@
       position: relative;
       cursor: pointer;
     }
-    nav a::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: -4px;
-      width: 0%;
-      height: 2px;
-      background-color: #237b2e;
-      transition: width 0.3s ease;
-    }
-    nav a:hover::after {
-      width: 100%;
-    }
-    nav a:hover {
-      color: #880606;
-    }
+
       @media (max-width: 768px) {
   .hamburger {
     display: flex;
@@ -149,9 +134,7 @@
   nav a::after {
     background-color: #237b2e; /* Green underline to match theme */
   }
-  nav a:hover {
-    color: #880606; /* Red hover effect to match theme */
-  }
+
 }
     
     .cursor, .cursor-follower {
@@ -206,9 +189,7 @@
       font-size: 1rem;
       cursor: pointer;
       transition: background 0.3s ease;
-    }
-    .hero-content button:hover {
-      background: #9a2222;
+background: #9a2222;
     }
     .content {
       padding: 100px 20px;
@@ -244,9 +225,6 @@
       cursor: pointer;
       transition: background 0.3s ease;
       font-family: 'Bebas Neue', sans-serif;
-    }
-    .category-nav button:hover {
-      background: #8f2222;
     }
     .category-nav button.active {
       background: #237b2e;
@@ -315,9 +293,7 @@
       align-self: flex-end;
       font-family: 'Bebas Neue', sans-serif;
     }
-    .menu-item button:hover {
-      background: #922525;
-    }
+
     .cart-container {
       background: #fff;
       padding: 20px;
@@ -353,9 +329,7 @@
       font-size: 1.2rem;
       margin-top: 10px;
     }
-    .cart-checkout:hover {
-      background: #237b2e;
-    }
+
     .modal {
       position: fixed;
       top: 0;
@@ -398,16 +372,7 @@
       margin-top: 10px;
       font-family: 'Bebas Neue', sans-serif;
     }
-    .modal-content button:hover {
-      background: #237b2e;
-    }
-    .modal-content button.cancel {
-      background: #ff4d4d;
-      margin-left: 10px;
-    }
-    .modal-content button.cancel:hover {
-      background: #cc0000;
-    }
+ 
     footer {
       text-align: center;
       padding: 20px;
